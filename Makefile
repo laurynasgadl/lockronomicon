@@ -6,7 +6,7 @@ MODULE := $(shell env GO111MODULE=on $(GO) list -m)
 
 BINARY := lockronomicon
 
-BUILD_VERSION  := $(shell git describe --tags --always --match="v*" 2> /dev/null)
+BUILD_VERSION  := $(shell git describe --tags --abbrev=0 --always --match="v*" 2> /dev/null)
 BUILD_DATE     := $(shell date '+%FT%T')
 BUILD_REVISION := $(shell git rev-parse HEAD)
 
@@ -20,7 +20,7 @@ build:
 
 .PHONY: build-docker
 build-docker: build-docker-bin
-	docker build -t $(BINARY):$(BUILD_VERSION) -f Dockerfile .
+	docker build -t laurynasgadl/$(BINARY):$(BUILD_VERSION) -f Dockerfile .
 
 .PHONY: build-docker-bin
 build-docker-bin:

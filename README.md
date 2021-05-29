@@ -17,6 +17,7 @@ Usage of ./lockronomicon:
 ```
 
 ### Docker
+Lockronomicon is available as a [Docker image](https://hub.docker.com/r/laurynasgadl/lockronomicon):
 ```
 docker run -p 80:80 laurynasgadl/lockronomicon
 ```
