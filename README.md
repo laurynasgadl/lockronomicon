@@ -42,23 +42,25 @@ DELETE  | /api/locks/{key} | generation | For releasing an owned lock
 
 
 ### Checking service health
-
-REQUEST | BODY
---------|-----
-`GET /health` | -
-
+```http
+GET /health
+```
 
 ##### Responses
 STATUS | BODY | EXPLANATION
 -------|------|------------
 200 OK | `{"status":"OK"}` | Service is healthy
 
+##### Example
+```bash
+> curl localhost:80/health
+{"status":"OK"}
+```
 
 ### Acquiring lock
-
-REQUEST | BODY
---------|-----
-`POST /api/locks` | `{"key":"example.lock_key_1","ttl":300}`
+```http
+POST /api/locks
+```
 
 ##### Params
 NAME | TYPE | EXPLANATION
@@ -72,12 +74,16 @@ STATUS | BODY | EXPLANATION
 200 OK | `{"generation":1622184940255602000}` | Lock acquired successfully
 423 Locked | - | Lock already taken
 
+##### Example
+```bash
+> curl -X POST -H "Content-Type: application/json" -d '{"key":"example.lock_key_1","ttl":300}' localhost:80/api/locks
+{"generation":1622283840185146846}
+```
 
 ### Refreshing lock
-
-REQUEST | BODY
---------|-----
-`PUT /api/locks/{key}` | `{"generation":1622184940255602000}`
+```http
+PUT /api/locks/{key}
+```
 
 ##### Params
 NAME | TYPE | EXPLANATION
@@ -92,12 +98,16 @@ STATUS | BODY | EXPLANATION
 412 Precondition Failed | - | Generation number does not match the current one for this lock
 404 Not Found | - | Lock with such key does not exist
 
+##### Example
+```bash
+> curl -X PUT -H "Content-Type: application/json" -d '{"generation":1622283840185146846}' localhost:80/api/locks/example.lock_key_1
+{"generation":1622283979363905515}
+```
 
 ### Releasing lock
-
-REQUEST | BODY
---------|-----
-`PUT /api/locks/{key}` | `{"generation":1622184940255602000}`
+```http
+DELETE /api/locks/{key}
+```
 
 ##### Params
 NAME | TYPE | EXPLANATION
@@ -111,3 +121,9 @@ STATUS | BODY | EXPLANATION
 200 OK | - | Lock released successfully
 412 Precondition Failed | - | Generation number does not match the current one for this lock
 404 Not Found | - | Lock with such key does not exist
+
+##### Example
+```bash
+> curl -X DELETE -H "Content-Type: application/json" -d '{"generation":1622283979363905515}' localhost:80/api/locks/example.lock_key_1
+200 OK
+```
