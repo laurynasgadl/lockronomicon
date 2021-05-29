@@ -48,7 +48,7 @@ REQUEST | BODY
 `GET /health` | -
 
 
-#### Responses
+##### Responses
 STATUS | BODY | EXPLANATION
 -------|------|------------
 200 OK | `{"status":"OK"}` | Service is healthy
@@ -60,13 +60,13 @@ REQUEST | BODY
 --------|-----
 `POST /api/locks` | `{"key":"example.lock_key_1","ttl":300}`
 
-#### Params
+##### Params
 NAME | TYPE | EXPLANATION
 -----|------|------------
 key  | string of pattern `^[\w.-]+$` | the lock key
 ttl  | int | lock's time-to-live in seconds, negative TTL makes the lock immortal
 
-#### Responses
+##### Responses
 STATUS | BODY | EXPLANATION
 -------|------|------------
 200 OK | `{"generation":1622184940255602000}` | Lock acquired successfully
@@ -79,13 +79,13 @@ REQUEST | BODY
 --------|-----
 `PUT /api/locks/{key}` | `{"generation":1622184940255602000}`
 
-#### Params
+##### Params
 NAME | TYPE | EXPLANATION
 -----|------|------------
 key  | string of pattern `^[\w.-]+$` | the lock key
 generation  | int | lock's generation number returned upon acquiring it
 
-#### Responses
+##### Responses
 STATUS | BODY | EXPLANATION
 -------|------|------------
 200 OK | `{"generation":1622189339302681238}` | Lock refreshed successfully, new generation key returned
@@ -99,13 +99,13 @@ REQUEST | BODY
 --------|-----
 `PUT /api/locks/{key}` | `{"generation":1622184940255602000}`
 
-#### Params
+##### Params
 NAME | TYPE | EXPLANATION
 -----|------|------------
 key  | string of pattern `^[\w.-]+$` | the lock key
 generation  | int | lock's generation number returned upon acquiring it
 
-#### Responses
+##### Responses
 STATUS | BODY | EXPLANATION
 -------|------|------------
 200 OK | - | Lock released successfully
