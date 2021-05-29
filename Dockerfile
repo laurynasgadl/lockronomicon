@@ -1,7 +1,7 @@
 FROM alpine:latest
 
-COPY locker /locker
+COPY lockronomicon /lockronomicon
 
 EXPOSE 80
 
-ENTRYPOINT [ "/locker" ]
+ENTRYPOINT [ "/lockronomicon" ]

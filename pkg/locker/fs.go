@@ -164,7 +164,9 @@ func (fs *FsLocker) Expired(key string) (int64, bool, error) {
 		return 0, false, ErrDecodeMetadata
 	}
 
-	return gen, metadata.Expires <= time.Now().Unix(), nil
+	expired := metadata.Expires != -1 && metadata.Expires <= time.Now().Unix()
+
+	return gen, expired, nil
 }
 
 func (fs *FsLocker) getGenerationNumber(file fs.FileInfo) int64 {
@@ -186,9 +188,21 @@ func ParseMetadata(data []byte) (*Metadata, error) {
 }
 
 func NewMetadata(ttl time.Duration) *Metadata {
+	var expires int64
+
+	if ttl < -1 {
+		ttl = -1 * time.Second
+	}
+
+	if ttl < 0 {
+		expires = -1
+	} else {
+		expires = time.Now().Add(ttl).Unix()
+	}
+
 	return &Metadata{
 		TTL:     int64(ttl.Seconds()),
-		Expires: time.Now().Add(ttl).Unix(),
+		Expires: expires,
 	}
 }
 

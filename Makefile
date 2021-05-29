@@ -14,6 +14,9 @@ BUILD_PLATFORMS := darwin/amd64 freebsd/amd64 linux/amd64 windows/amd64 linux/38
 
 LDFLAGS=-ldflags "-X $(MODULE)/build.Name=$(BINARY) -X $(MODULE)/build.Version=$(BUILD_VERSION) -X $(MODULE)/build.Date=$(BUILD_DATE) -X $(MODULE)/build.Revision=$(BUILD_REVISION)"
 
+.PHONY: build
+build:
+	GO111MODULE=on GOOS=$(GOHOSTOS) GOARCH=$(GOHOSTARCH) $(GO) build $(LDFLAGS) -v -o $(BINARY) ./cmd/$(BINARY)
 
 .PHONY: build-docker
 build-docker: build-docker-bin

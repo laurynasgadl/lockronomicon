@@ -30,7 +30,7 @@ func execServerTest(t *testing.T, fn func(server *Server)) {
 
 func TestCreatesLock(t *testing.T) {
 	execServerTest(t, func(server *Server) {
-		body := strings.NewReader(`{"key":"test","ttl":300}`)
+		body := strings.NewReader(`{"key":"test","ttl":-12}`)
 		req := httptest.NewRequest("POST", "/api/locks", body)
 		w := httptest.NewRecorder()
 		server.router.ServeHTTP(w, req)
@@ -53,7 +53,7 @@ func TestCreatesLock(t *testing.T) {
 
 func TestReturnsLockedStatus(t *testing.T) {
 	execServerTest(t, func(server *Server) {
-		_, err := server.locker.Lock("test", 300*time.Second)
+		_, err := server.locker.Lock("test", -1*time.Second)
 		if err != nil {
 			t.Errorf("unexpected error while locking: %v", err)
 		}

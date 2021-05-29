@@ -162,6 +162,52 @@ func TestRefreshUpdatesMetadata(t *testing.T) {
 	})
 }
 
+func TestRefreshHandlesNeverExpiringLock(t *testing.T) {
+	execFsTest(t, func(l *FsLocker) {
+		key := "test.key"
+
+		gn, err := l.Lock(key, -100)
+		if err != nil {
+			t.Errorf("fs locker lock unexpected error: %v", err)
+		}
+
+		mdFilePath := filepath.Join(l.rootDir, key, metadataFilename)
+
+		mdInfo, err := os.ReadFile(mdFilePath)
+		if err != nil {
+			t.Errorf("fs locker metadata read unexpected error: %v", err)
+		}
+
+		ogMetadata, err := ParseMetadata(mdInfo)
+		if err != nil {
+			t.Errorf("fs locker metadata parse unexpected error: %v", err)
+		}
+
+		_, err = l.Refresh(key, gn)
+		if err != nil {
+			t.Errorf("fs locker refresh unexpected error: %v", err)
+		}
+
+		mdInfo, err = os.ReadFile(mdFilePath)
+		if err != nil {
+			t.Errorf("fs locker metadata read unexpected error: %v", err)
+		}
+
+		updatedMetadata, err := ParseMetadata(mdInfo)
+		if err != nil {
+			t.Errorf("fs locker metadata parse unexpected error: %v", err)
+		}
+
+		if ogMetadata.Expires != updatedMetadata.Expires {
+			t.Errorf("fs locker metadata expiry not updated: %v", updatedMetadata)
+		}
+
+		if ogMetadata.TTL != updatedMetadata.TTL {
+			t.Errorf("fs locker metadata TTL unexpectedly updated: %d", updatedMetadata.TTL)
+		}
+	})
+}
+
 func TestRecognizesExpiredLock(t *testing.T) {
 	execFsTest(t, func(l *FsLocker) {
 		key := "test.key"
@@ -189,6 +235,26 @@ func TestRecognizesNonExpiredLock(t *testing.T) {
 		key := "test.key"
 
 		_, err := l.Lock(key, 10*time.Second)
+		if err != nil {
+			t.Errorf("fs locker lock unexpected error: %v", err)
+		}
+
+		_, exp, err := l.Expired(key)
+		if err != nil {
+			t.Errorf("fs locker expired unexpected error: %v", err)
+		}
+
+		if exp {
+			t.Errorf("expected lock to be non-expired")
+		}
+	})
+}
+
+func TestRecognizesNeverExpiringLock(t *testing.T) {
+	execFsTest(t, func(l *FsLocker) {
+		key := "test.key"
+
+		_, err := l.Lock(key, -1*time.Second)
 		if err != nil {
 			t.Errorf("fs locker lock unexpected error: %v", err)
 		}
